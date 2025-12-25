@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { combine } from "zustand/middleware";
+import { combine, subscribeWithSelector } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 // type Store = {
@@ -11,22 +11,35 @@ import { immer } from "zustand/middleware/immer";
 // };
 
 export const useCountStore = create(
-  immer(
-    combine({ count: 0 }, (set, get) => ({
-      actions: {
-        increaseOne: () => {
-          set((state) => {
-            state.count += 1;
-          });
+  subscribeWithSelector(
+    immer(
+      combine({ count: 0 }, (set, get) => ({
+        actions: {
+          increaseOne: () => {
+            set((state) => {
+              state.count += 1;
+            });
+          },
+          decreaseOne: () => {
+            set((state) => {
+              state.count -= 1;
+            });
+          },
         },
-        decreaseOne: () => {
-          set((state) => {
-            state.count -= 1;
-          });
-        },
-      },
-    })),
+      })),
+    ),
   ),
+);
+
+useCountStore.subscribe(
+  (state) => state.count,
+  (count, prevCount) => {
+    //Listener
+    console.log(count, prevCount);
+
+    const store = useCountStore.getState();
+    // useCountStore.setState((state) => ({ count: 10 })); //무한루프가 될수 있어 사용하지 않음
+  },
 );
 
 // export const useCountStore = create<Store>((set, get) => {
