@@ -1,5 +1,10 @@
 import { create } from "zustand";
-import { combine, subscribeWithSelector, persist } from "zustand/middleware";
+import {
+  combine,
+  subscribeWithSelector,
+  persist,
+  createJSONStorage,
+} from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 // type Store = {
@@ -35,6 +40,7 @@ export const useCountStore = create(
       partialize: (state) => ({
         count: state.count,
       }),
+      storage: createJSONStorage(() => sessionStorage),
     },
   ),
 );
